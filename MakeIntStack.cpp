@@ -2,10 +2,18 @@
 #include <iostream>
 using namespace std;
 
+MakeIntStack :: MakeIntStack(const MakeIntStack& s){
+    tos = s.tos;
+    size = s.size;
+    p = new int[size];
+    for(int i = 0;i<size; i++){
+        p[i]=s.p[i];
+    }
+}
 bool MakeIntStack::push(int n)
 {
 if (tos + 1 == size)
-{ cout << "½ºÅÃÀÌ ²Ë Ã¡½À´Ï´Ù." << endl; return false; }
+{ cout << "ìŠ¤íƒì´ ê½‰ ì°¼ìŠµë‹ˆë‹¤." << endl; return false; }
 tos++;
 p[tos] = n;
 }
@@ -13,7 +21,7 @@ p[tos] = n;
 bool MakeIntStack::pop(int& n)
 {
 if (tos == -1)
-{ cout << "½ºÅÃÀÌ" << endl; return false; }
+{ cout << "ìŠ¤íƒì´" << endl; return false; }
 n = p[tos];
 tos--;
 }
