@@ -7,8 +7,8 @@ class MakeIntStack {
     int size;
     int tos;
 public:
-    MakeIntStack(){p = new int[5]; size = 5; tos = -1;};
-    MakeIntStack(int size){p = new int[5];size = 5;tos = -1;};
+    MakeIntStack();
+    MakeIntStack(int size);
     MakeIntStack(const MakeIntStack& s);
     ~MakeIntStack();
     bool push(int n);
