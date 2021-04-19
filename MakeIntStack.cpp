@@ -2,11 +2,16 @@
 #include <iostream>
 using namespace std;
 
-MakeIntStack :: MakeIntStack(const MakeIntStack& s){
-    tos = s.tos;
-    size = s.size;
+MakeIntStack :: MakeIntStack(int size){
+    this->size = size;
+    tos = -1;
     p = new int[size];
-    for(int i = 0;i<size; i++){
+}
+MakeIntStack :: MakeIntStack(const MakeIntStack& s){
+    this->size = s.size;
+    this->tos = s.tos;
+    this->p = new int[size];
+    for(int i=0;i<size;i++){
         p[i]=s.p[i];
     }
 }
