@@ -78,7 +78,12 @@ public:
     void Run(); // 도형 편집기 실행하는 함수
 };
 GraphicEditor :: ~GraphicEditor(){
-        delete pStart, pLast;
+        Shape* tmp = pStart;
+        while(tmp!=NULL){
+            Shape* next_sh = tmp->getNext(); // 다음 도형 주소 next_sh에 대입
+            delete tmp;
+            tmp = next_sh;
+        }
     } // 모든 도형 삭제
 void GraphicEditor :: Run(){
     UI::showUI();
@@ -128,6 +133,7 @@ void GraphicEditor :: Run(){
         }
         else if(pick ==4){
             End();
+            break;
         }
     }
 }
@@ -162,7 +168,6 @@ void GraphicEditor :: ShowAll(){
 }
 void GraphicEditor :: End(){
     cout << "그래픽 에디터를 종료합니다." << endl;
-    exit(1);
 }
 int main(){
     GraphicEditor * ge = new GraphicEditor();
