@@ -1,0 +1,171 @@
+#include <iostream>
+#include <cstdlib>
+using namespace std;
+class Shape {
+protected:
+	int size;
+	Shape* next;
+	virtual void draw() = 0;
+public:
+	Shape(int s = 1) { size = s; next = NULL; }
+	virtual ~Shape() { }
+	void paint() { draw(); }
+	Shape* add(Shape* p);
+	Shape* getNext() { return next; }
+};
+
+Shape* Shape::add(Shape* p) {
+	this->next = p;
+	return p;
+}
+
+class Triangle : public Shape {
+protected:
+    virtual void draw() {cout << "Triangle" << "(size " << size << ") " << endl;}
+public: 
+    Triangle(int s =1) : Shape(s) {}
+};
+
+class Line : public Shape {
+protected:
+    virtual void draw() {cout << "Line" << "(size " << size << ") " << endl;}
+public: 
+    Line(int s =1) : Shape(s) {}
+};
+
+class Rect : public Shape {
+protected:
+    virtual void draw(){cout << "Rect" << "(size " << size << ") " << endl;}
+public: 
+    Rect(int s = 1) : Shape(s) {}
+};
+
+class UI{
+public:
+    static void showUI(){cout << "그래픽 에디터 입니다." << endl;}
+    static int GetMenuInput();
+    static int GetAddInput();
+    static int GetDeleteInput();
+};
+int UI :: GetMenuInput(){
+    int pick;
+    cout << "삽입:1, 삭제:2, 모두보기:3, 종료:4 >> ";
+    cin >> pick;
+    return pick;
+}
+int UI :: GetAddInput(){
+    int pick;
+    cout << "선:1, 삼각형:2, 사각형:3 >> ";
+    cin >> pick;
+    return pick;
+}
+int UI :: GetDeleteInput(){
+    int pick;
+    cout << "삭제하고자 하는 도형의 인덱스 >> ";
+    cin >> pick;
+    return pick;
+}
+class GraphicEditor{
+    Shape* pStart, *pLast;
+    int count; // 리스트의 카운트
+public:
+    GraphicEditor(){pStart = pLast = NULL;count = 0;} // 빈 도형 리스트로 초기화
+    ~GraphicEditor(); // 모든 도형 삭제
+    void ShowAll(); // 도형 리스트 보이기
+    void Add(Shape* sp); // 맨 뒤에 도형 sp 추가
+    void Delete(); // 인덱스 n에 해당 하는 도형 삭제
+    void End();
+    void Run(); // 도형 편집기 실행하는 함수
+};
+GraphicEditor :: ~GraphicEditor(){
+        delete pStart, pLast;
+    } // 모든 도형 삭제
+void GraphicEditor :: Run(){
+    UI::showUI();
+    while(1){
+        int pick=UI::GetMenuInput();
+        if(pick==1){
+            int wShape = UI::GetAddInput();
+            switch(wShape){
+                case 1: // 라인
+                    if(count == 0){ // 리스트가 0개 일때
+                        pStart = new Line(rand()%10+1); // 라인 객체 생성 하고 첫번째에 추가
+                        pLast = pStart; // 리스트가 1개 이므로 시작과 끝이 같음
+                    }
+                    else // 리스트가 1개 이상이 이미 만들어져 있을 경우
+                        Add(pLast->add(new Line(rand()%10+1))); 
+                        // 마지막 리스트에 새로 만든 리스트 추가하고, 이전 마지막 리스트랑 연결
+                    count ++; // 리스트 개수 추가
+                    break;
+                case 2: // 삼각형
+                    if(count == 0){ // 리스트가 0개 일때
+                        pStart = new Triangle(rand()%10+1); // 삼각형 객체 생성 하고 첫번째에 추가
+                        pLast = pStart; // 리스트가 1개 이므로 시작과 끝이 같음
+                    }
+                    else // 리스트가 1개 이상이 이미 만들어져 있을 경우
+                        Add(pLast->add(new Triangle(rand()%10+1))); 
+                        // 마지막 리스트에 새로 만든 리스트 추가하고, 이전 마지막 리스트랑 연결
+                    count ++; // 리스트 개수 추가
+                    break;
+                case 3: // 사각형
+                    if(count == 0){ // 리스트가 0개 일때
+                        pStart = new Rect(rand()%10+1); // 사각형 객체 생성 하고 첫번째에 추가
+                        pLast = pStart; // 리스트가 1개 이므로 시작과 끝이 같음
+                    }
+                    else // 리스트가 1개 이상이 이미 만들어져 있을 경우
+                        Add(pLast->add(new Rect(rand()%10+1))); 
+                        // 마지막 리스트에 새로 만든 리스트 추가하고, 이전 마지막 리스트랑 연결
+                    count ++; // 리스트 개수 추가
+                    break;
+            }
+        }
+        else if(pick == 2){
+            if(count == 0)cout << "리스트가 비었습니다." << endl;
+            else Delete();
+        }
+        else if(pick == 3){
+            ShowAll();
+        }
+        else if(pick ==4){
+            End();
+        }
+    }
+}
+void GraphicEditor :: Delete(){
+    Shape* tmp = pStart;
+    int s_index = UI::GetDeleteInput();
+    if(s_index < count){
+        for(int i=0;i<s_index;i++){tmp++;}
+        if(s_index == 0){ // 0일 경우
+            pStart = tmp->getNext(); // 시작을 다음 꺼로
+        }
+        else if(s_index == (count-1)){ // 마지막 일 경우
+            tmp = pLast; 
+            pLast = pLast--; 
+        }
+        if(s_index == 1)pLast = pStart; // 리스트가 1개 일때
+        count--;
+        delete tmp; // tmp가 가리키는 도형 삭제
+    }
+    else cout << "인덱스를 잘못 입력했습니다." << endl;
+}
+void GraphicEditor :: Add(Shape* sp){
+    pLast = sp;
+}
+void GraphicEditor :: ShowAll(){
+    Shape *tmp = pStart; // 도형 출력을 위해 첫번째 주소를 저장할 임시 포인터 
+    for(int i=0;i<count;i++){
+        cout << i << ":";
+        tmp->paint(); // 도형 + 사이즈 출력
+        tmp = tmp->getNext(); // tmp에 다음 노드 주소 저장
+    }
+}
+void GraphicEditor :: End(){
+    cout << "그래픽 에디터를 종료합니다." << endl;
+    exit(1);
+}
+int main(){
+    GraphicEditor * ge = new GraphicEditor();
+    ge->Run();
+    delete ge;
+}
